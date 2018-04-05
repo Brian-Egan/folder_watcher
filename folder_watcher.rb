@@ -19,21 +19,29 @@ def match_root_folder(path)
   return nil
 end
 
+def add_variables_to_command(command, variables = [])
+  variables.each_with_index do |var, indx|
+    command.gsub!("{VARIABLE#{indx + 1}}", var)
+  end
+  command 
+end
+
 # Define watcher options and paths to watch.
 options = {:latency => '5', :no_defer => false}
-paths = []
-SETTINGS.each_key { |key| paths = paths + [SETTINGS[key]['path']] }
+paths = SETTINGS.map {|key,value| value["path"]}
 
 # Define the watcher.
 fsevent = FSEvent.new
-fsevent.watch paths, options do |dirs|
+fsevent.watch(paths, options) do |dirs|
   applied_settings = []
   fsevent.stop
   dirs.each do |dir|  
     settings = match_root_folder(dir)
     if settings && !(applied_settings.include? settings)
-      applied_settings = applied_settings + [settings]
-      system settings['command']
+      # applied_settings = applied_settings + [settings]
+      applied_settings << settings
+      command = add_variables_to_command(settings['command'], settings["variables"])
+      system command
     end
   end
   fsevent.run

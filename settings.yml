@@ -1,3 +1,4 @@
 test:
-  path: /Users/Vickash/Desktop/test
-  command: "osascript -e 'beep'"
+  path: /Users/began/Downloads
+  command: osascript -e 'display notification "Lorem ipsum dolor sit amet {VARIABLE2}" with title "{VARIABLE1}"'
+  variables: ["things", "STUFF"]
